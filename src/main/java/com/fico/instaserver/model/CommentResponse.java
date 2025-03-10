@@ -1,20 +1,23 @@
 package com.fico.instaserver.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class CommentResponse {
     private Long id;
     private String postId;
     private String username;
     private String text;
+    private List<ReplyResponse> replies;
     private LocalDateTime createdAt;
 
-    public CommentResponse(Long id, String postId, String username, String text, LocalDateTime createdAt) {
+    public CommentResponse(Long id, String postId, String username, String text, List<ReplyResponse> replies, LocalDateTime createdAt) {
         this.id = id;
         this.postId = postId;
         this.username = username;
         this.text = text;
         this.createdAt = createdAt;
+        this.replies = replies;
     }
 
     public Long getId() {
@@ -55,5 +58,13 @@ public class CommentResponse {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<ReplyResponse> getReplies() {
+        return replies;
+    }
+
+    public void setReplies(List<ReplyResponse> replies) {
+        this.replies = replies;
     }
 }

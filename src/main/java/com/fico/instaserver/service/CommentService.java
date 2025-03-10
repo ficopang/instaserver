@@ -25,12 +25,16 @@ public class CommentService {
         List<Comment> posts = commentRepository.findByPostId(postId);
 
         return posts.stream()
-                .map(comment -> new CommentResponse(comment.getId(), comment.getPost().getId().toString(), comment.getUser().getUsername(), comment.getText(), comment.getCreatedAt()))
+                .map(comment -> new CommentResponse(comment.getId(),
+                        comment.getPost().getId().toString(),
+                        comment.getUser().getUsername(),
+                        comment.getText(),
+                        comment.getReplies().stream().map((reply -> new ReplyResponse(reply.getId(), reply.getUser().getUsername(), reply.getContent()))).collect(Collectors.toList()),
+                        comment.getCreatedAt()))
                 .collect(Collectors.toList());
     }
 
     public Comment addComment(String username, Long postId, String text) {
-        // Retrieve User
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
