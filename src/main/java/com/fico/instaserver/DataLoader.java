@@ -34,9 +34,9 @@ public class DataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if(userRepository.count() == 0) {
-            User user1 = new User("user1", passwordEncoder.encode("asd"));
+            User user1 = new User("user1", passwordEncoder.encode("asd"), "user");
             userRepository.save(user1);
-            User user2 = new User("user2", passwordEncoder.encode("asd"));
+            User user2 = new User("admin", passwordEncoder.encode("asd"), "admin");
             userRepository.save(user2);
 
             Post postByUser1 = new Post("/uploads/38e5fff4-a211-44eb-ab9f-3eaa876d08ac_IMG_20250308_164904.jpg", "This is a long caption so we can test for expandable", user1);

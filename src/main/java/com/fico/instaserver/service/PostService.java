@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -43,7 +44,13 @@ public class PostService {
 
     public List<PostResponse> getAllPosts(String username) {
         User user = userService.getUserByUsername(username);
-        List<Post> posts = postRepository.findAllByOrderByIdDesc();
+        List<Post> posts = new ArrayList<>();
+
+        if(user.getRole().equals("admin")) {
+            posts = postRepository.findAllByOrderByIdDesc();
+        } else {
+            posts = postRepository.findAllByUser(user);
+        }
 
         return posts.stream()
                 .map(post -> new PostResponse(post, post.getUser(), likeRepository.countByPost(post), commentRepository.countByPost(post), likeRepository.existsByUserAndPost(user, post)))
