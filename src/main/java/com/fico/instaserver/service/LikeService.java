@@ -1,13 +1,16 @@
 package com.fico.instaserver.service;
 
-import com.fico.instaserver.model.Like;
-import com.fico.instaserver.model.Post;
-import com.fico.instaserver.model.User;
+import com.fico.instaserver.model.*;
+import com.fico.instaserver.repository.CommentRepository;
 import com.fico.instaserver.repository.LikeRepository;
 import com.fico.instaserver.repository.PostRepository;
+import com.fico.instaserver.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LikeService {
@@ -19,6 +22,12 @@ public class LikeService {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Transactional
     public String toggleLike(Long postId, String username) {
@@ -33,6 +42,15 @@ public class LikeService {
             likeRepository.save(new Like(user, post));
             return "Post liked";
         }
+    }
+
+    public List<LikeResponse> getLikes(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return likeRepository.findLikeByPostOwner(user.getId()).stream().map(
+                (like -> new LikeResponse(like.getUser().getUsername(), new PostResponse(like.getPost(), like.getPost().getUser(), likeRepository.countByPost(like.getPost()), commentRepository.countByPost(like.getPost()), likeRepository.existsByUserAndPost(user, like.getPost()))))
+        ).collect(Collectors.toList());
     }
 }
 

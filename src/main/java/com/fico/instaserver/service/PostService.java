@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -72,6 +73,19 @@ public class PostService {
         } catch (IOException e) {
             throw new RuntimeException("Failed to save image", e);
         }
+    }
+
+    public PostResponse deletePost(Long postId, String username) {
+        Optional<Post> postRepo = postRepository.findById(postId);
+        if(postRepo.isPresent()) {
+            Post post = postRepo.get();
+            User user = post.getUser();
+            postRepository.delete(post);
+
+            return new PostResponse(post, post.getUser(), likeRepository.countByPost(post), commentRepository.countByPost(post), likeRepository.existsByUserAndPost(user, post));
+        }
+
+        throw new RuntimeException("Invalid username or password");
     }
 }
 
